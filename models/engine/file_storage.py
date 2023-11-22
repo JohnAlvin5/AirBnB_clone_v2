@@ -53,6 +53,8 @@ class FileStorage:
         """Deletes obj from the _objects private instance attribute"""
         if obj:
             key = "{}.{}".format(type(obj.__name__, obj.id))
-            if(key, obj) in self.__objects.items():
-                self.__objects.pop(key, None)
-        self.save()
+            del self.__objects[key]
+
+    def close(self):
+        """Reload JSON objects"""
+        return self.reload()
