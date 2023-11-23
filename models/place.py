@@ -8,6 +8,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from os import getenv
 import models
 
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id", String(60), ForeignKey("places.id"),
+                             primary_key=True, nullable=False),
+                      Column("amenity_id", String(60), ForeignKey("amenities.id"),
+                             primary_key=True, nullable=False))
 
 class Place(BaseModel, Base):
     """ A place to stay """
@@ -31,3 +36,29 @@ class Place(BaseModel, Base):
         amenities = relationship("Amenity", secondary=place_amenity,
                 viewonly=False, back_populates="place_amenities")
     else:
+        @property
+        def reviews(self):
+            """ Returns list of review instances with place_id """
+            values = models.storage.all()
+            idList = []
+            result = []
+            for key in values:
+                review = key.replace('.', ' ')
+                review = shlex.split(review)
+                if (review[0] == 'Review'):
+                    idList.append(values[key])
+            for element in idList:
+                if (element.place_id == self.id):
+                    result.append(element)
+            return (result)
+
+        @property
+        def amenities(self):
+            """ returns the list of amenity instances based on amenity_ids """
+            return self.amenity_ids
+
+        @amenities.setter
+        def amenities(self, obj=None):
+            """ Appends amenity ids """
+            if type(obj) is Amenity and obj.id not in self.amenity_ids:
+                self.amenity_ids.append(obj.id)
