@@ -34,22 +34,39 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
+        """ query on the current database session all objects of class name """
+        dictry = {}
+        if cls:
+            if type(cls) is str:
+                cls = eval(cls)
+            query = self.__session.query(cls)
+            for element in query:
+                key = "{}.{}".format(type(element).__name__, element.id)
+                dictry[key] = element
+        else:
+            clasList = [State, City, User, Place, Review, Amenity]
+            for clas in clasList:
+                query = self.__session.query(clas)
+                for element in query:
+                    key = "{}.{}".format(type(element).__name__, element.id)
+                    dictry[key] = element
+        return (dictry)
 
     def new(self, obj):
-    """ adds the object to the current database session """
+        """ adds the object to the current database session """
         self.__session.add(obj)
 
     def save(self):
-    """ commits all changes of the current database session """
+        """ commits all changes of the current database session """
         self.__session.commit()
 
     def delete(self, obj=None):
-    """ deletes from the current database session """
+        """ deletes from the current database session """
         if obj:
             self.session.delete(obj)
 
     def reload(self):
-    """ creates all tables in the database """
+        """ creates all tables in the database """
         Base.metadata.create_all(self.__engine)
         sess = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess)
