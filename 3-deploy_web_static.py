@@ -9,14 +9,17 @@ import os.path
 
 env.hosts = ["100.25.117.101", "54.160.106.191"]
 
+
 def do_pack():
     """ Creates a .tgz archive of the directory web_static
         Otherwise returns None
     """
     dt = datetime.utcnow()
     file = "versions/web_static_{}{}{}{}{}{}.tgz".format(dt.year,
-                    dt.month, dt.day, dt.hour, dt.minute, dt.second)
-    
+                                                         dt.month, dt.day,
+                                                         dt.hour, dt.minute,
+                                                         dt.second)
+
     if os.path.isdir("versions") is False:
         if local("mkdir -p versions").failed is True:
             return None
@@ -48,7 +51,7 @@ def do_deploy(archive_path):
         return False
     if run("rm /tmp/{}".format(file)).failed is True:
         return False
-    
+
     if run("mv /data/web_static/releases/{}/web_static/* "
            "/data/web_static/releases/{}/".format(name, name)).failed is True:
         return False
