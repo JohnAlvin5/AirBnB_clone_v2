@@ -14,7 +14,7 @@ def do_deploy(archive_path):
     """
     if os.path.isfile(archive_path) is False:
         return False
-    
+
     file = archive_path.split("/")[-1]
     name = file.split(".")[0]
 
@@ -31,7 +31,7 @@ def do_deploy(archive_path):
         return False
     if run("sudo rm /tmp/{}".format(file)).failed is True:
         return False
-    
+
     if run("sudo mv /data/web_static/releases/{}/web_static/* "
            "/data/web_static/releases/{}/".format(name, name)).failed is True:
         return False
